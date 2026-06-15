@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Neon Mobilite Lastik Basınç Hesaplayıcı</title>
+    <link rel="manifest" href="manifest.json">
+    <style>
+        :root {
+            --bg-color: #0d0e15;
+            --card-bg: #161925;
+            --neon-green: #00ff66;
+            --neon-blue: #00e5ff;
+            --neon-purple: #bd00ff;
+            --neon-orange: #ff9900;
+            --text-color: #f0f2f5;
+            --text-muted: #8a8f98;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            background-color: var(--card-bg);
+            border-radius: 16px;
+            box-shadow: 0 0 20px rgba(0, 255, 102, 0.1), 0 0 40px rgba(0, 229, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 30px;
+            width: 100%;
+            max-width: 550px;
+            box-sizing: border-box;
+        }
+
+        .lang-switcher {
+            margin: 0 auto 20px auto;
+            background: #25293c;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--neon-blue);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 8px rgba(0, 229, 255, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            width: fit-content;
+        }
+
+        .lang-switcher:hover {
+            border-color: var(--neon-blue);
+            box-shadow: 0 0 12px var(--neon-blue);
+            transform: scale(1.03);
+        }
+
+        h2 {
+            text-align: center;
+            margin-top: 0;
+            margin-bottom: 25px;
+            font-size: 24px;
+            letter-spacing: 1px;
+            background: linear-gradient(45deg, var(--neon-green), var(--neon-blue));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-transform: uppercase;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        .weight-display {
+            font-size: 18px;
+            color: var(--neon-green);
+            font-weight: bold;
+            float: right;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            background: #25293c;
+            accent-color: var(--neon-green);
+            height: 6px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        select {
+            width: 100%;
+            padding: 12px;
+            background-color: #25293c;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            color: var(--text-color);
+            font-size: 15px;
+            outline: none;
+            transition: border 0.3s;
+        }
+
+        select:focus {
+            border-color: var(--neon-blue);
+            box-shadow: 0 0 10px rgba(0, 229, 255, 0.2);
+        }
+
+        .radio-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+        .radio-label {
+            background-color: #25293c;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 12px;
+            text-align: center;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 13px;
+            display: block;
+            white-space: nowrap;
+        }
+
+        input[type="radio"] {
+            display: none;
+        }
+
+        #v-mtb:checked + .radio-label {
+            border-color: var(--neon-green);
+            background-color: rgba(0, 255, 102, 0.05);
+            color: var(--neon-green);
+            box-shadow: 0 0 10px rgba(0, 255, 102, 0.15);
+        }
+
+        #v-road:checked + .radio-label {
+            border-color: var(--neon-blue);
+            background-color: rgba(0, 229, 255, 0.05);
+            color: var(--neon-blue);
+            box-shadow: 0 0 10px rgba(0, 229, 255, 0.15);
+        }
+
+        #v-city:checked + .radio-label {
+            border-color: var(--neon-orange);
+            background-color: rgba(255, 153, 0, 0.05);
+            color: var(--neon-orange);
+            box-shadow: 0 0 10px rgba(255, 153, 0, 0.15);
+        }
+
+        #v-scooter:checked + .radio-label {
+            border-color: var(--neon-purple);
+            background-color: rgba(189, 0, 255, 0.05);
+            color: var(--neon-purple);
+            box-shadow: 0 0 10px rgba(189, 0, 255, 0.15);
+        }
+
+        .tire-type-group {
+            display: flex;
+            gap: 15px;
+        }
+        .tire-type-group input[type="radio"]:checked + .radio-label {
+            border-color: var(--neon-green);
+            background-color: rgba(0, 255, 102, 0.05);
+            color: var(--neon-green);
+        }
+
+        .bike-animation-box {
+            height: 140px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 25px 0;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 12px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .vehicle-wrapper {
+            position: relative;
+            width: 200px;
+            height: 100px;
+        }
+
+        .bike-line {
+            position: absolute;
+            background: #555e70;
+            height: 3px;
+            border-radius: 2px;
+            transform-origin: left center;
+        }
+
+        .bike-frame-group { display: block; }
+        .line-chainstay { width: 60px; left: 35px; top: 75px; }
+        .line-seatstay { width: 65px; left: 35px; top: 75px; transform: rotate(-50deg); }
+        .line-seattube { width: 55px; left: 95px; top: 75px; transform: rotate(-72deg); }
+        .line-downtube { width: 78px; left: 95px; top: 75px; transform: rotate(-36deg); }
+        .line-toptube { width: 76px; left: 78px; top: 23px; transform: rotate(5deg); }
+        .line-fork { width: 58px; left: 143px; top: 21px; transform: rotate(68deg); background: #8a8f98; }
+
+        .bike-saddle {
+            position: absolute; top: 16px; left: 68px; width: 24px; height: 5px;
+            background: #8a8f98; border-radius: 3px 10px 4px 4px;
+        }
+        .bike-handlebar {
+            position: absolute; top: 21px; left: 137px; width: 18px; height: 4px;
+            background: #8a8f98; border-radius: 2px; transform: rotate(-10deg);
+        }
+
+        .scooter-frame-group { display: none; }
+        .line-deck { width: 130px; left: 35px; top: 75px; height: 5px; background: #555e70; }
+        .line-fender { width: 22px; left: 25px; top: 73px; transform: rotate(-45deg); }
+        
+        .line-stem { 
+            position: absolute;
+            left: 150px; 
+            top: 20px; 
+            width: 15px; 
+            height: 55px; 
+            background: transparent;
+            border-left: 4px solid #8a8f98;
+            transform: none;
+        }
+        
+        .scooter-bar {
+            position: absolute; 
+            top: 18px; 
+            left: 135px; 
+            width: 25px; 
+            height: 4px;
+            background: #555e70; 
+            border-radius: 2px;
+        }
+
+        .mode-scooter .bike-frame-group { display: none; }
+        .mode-scooter .scooter-frame-group { display: block; }
+        
+        .mode-scooter .wheel {
+            width: 30px !important;
+            height: 30px !important;
+            top: 60px !important; 
+        }
+        .mode-scooter .wheel.rear { left: 20px !important; }
+        .mode-scooter .wheel.front { left: 150px !important; }
+
+        .wheel {
+            position: absolute;
+            top: 53px;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            box-sizing: border-box;
+            animation: spin 1.2s linear infinite;
+            transition: all 0.3s ease;
+        }
+
+        .wheel.rear {
+            left: 13px;
+            border: 3.5px solid var(--neon-green);
+            box-shadow: 0 0 12px var(--neon-green), inset 0 0 6px var(--neon-green);
+        }
+
+        .wheel.front {
+            right: 13px;
+            border: 3.5px solid var(--neon-blue);
+            box-shadow: 0 0 12px var(--neon-blue), inset 0 0 6px var(--neon-blue);
+        }
+
+        .wheel::before {
+            content: ''; position: absolute; top: 50%; left: 50%; width: 4px; height: 4px;
+            background: #fff; border-radius: 50%; transform: translate(-50%, -50%); z-index: 2;
+        }
+
+        .spoke-cross { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
+        .spoke-cross::before, .spoke-cross::after { content: ''; position: absolute; background: rgba(255, 255, 255, 0.3); }
+        .spoke-cross::before { top: 50%; left: 0; width: 100%; height: 1px; }
+        .spoke-cross::after { left: 50%; top: 0; width: 1px; height: 100%; }
+        .spoke-cross.diag { transform: rotate(45deg); }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .results { display: flex; gap: 15px; }
+        .result-card {
+            flex: 1; background: linear-gradient(135deg, #1e2235, #171a2b);
+            border-radius: 12px; padding: 15px; text-align: center; border-top: 3px solid var(--neon-blue);
+        }
+        .result-card.rear { border-top-color: var(--neon-green); }
+        .result-card h3 { margin: 0 0 10px 0; font-size: 14px; color: var(--text-muted); text-transform: uppercase; }
+        .value-psi { font-size: 28px; font-weight: 800; color: var(--text-color); margin-bottom: 5px; }
+        .value-bar { font-size: 14px; color: var(--text-muted); }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <button class="lang-switcher" id="langBtn" onclick="toggleLanguage()">
+        <span>🌐</span><span id="langBtnText">Dil: EN</span>
+    </button>
+
+    <h2 id="lblTitle">Mobilite Basınç Hesaplayıcı</h2>
+    
+    <div class="form-group">
+        <label id="lblVehicleType">Araç Tipi</label>
+        <div class="radio-grid">
+            <label>
+                <input type="radio" name="vehicleType" id="v-mtb" value="mtb" checked onchange="toggleVehicleMode()">
+                <span class="radio-label" id="btnMtb">🚴 Dağ Bisikleti</span>
+            </label>
+            <label>
+                <input type="radio" name="vehicleType" id="v-road" value="road" onchange="toggleVehicleMode()">
+                <span class="radio-label" id="btnRoad">🚴‍♂️ Yol / Yarış</span>
+            </label>
+            <label>
+                <input type="radio" name="vehicleType" id="v-city" value="city" onchange="toggleVehicleMode()">
+                <span class="radio-label" id="btnCity">🚲 Şehir / Hibrit</span>
+            </label>
+            <label>
+                <input type="radio" name="vehicleType" id="v-scooter" value="scooter" onchange="toggleVehicleMode()">
+                <span class="radio-label" id="btnScooter">🛴 El. Scooter</span>
+            </label>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label id="lblWeight">Sürücü Kilosu <span class="weight-display" id="weightVal">75 kg</span></label>
+        <input type="range" id="weight" min="40" max="120" value="75" oninput="calculatePressure()">
+    </div>
+
+    <div class="form-group" id="paramGroup"></div>
+
+    <div class="form-group">
+        <label id="lblTerrain" for="terrain">Sürüş Yapılacak Zemin</label>
+        <select id="terrain" onchange="calculatePressure()"></select>
+    </div>
+
+    <div class="bike-animation-box" id="animBox">
+        <div class="vehicle-wrapper">
+            <div class="bike-frame-group">
+                <div class="bike-line line-chainstay"></div>
+                <div class="bike-line line-seatstay"></div>
+                <div class="bike-line line-seattube"></div>
+                <div class="bike-line line-downtube"></div>
+                <div class="bike-line line-toptube"></div>
+                <div class="bike-line line-fork"></div>
+                <div class="bike-saddle"></div>
+                <div class="bike-handlebar"></div>
+            </div>
+            <div class="scooter-frame-group">
+                <div class="bike-line line-deck"></div>
+                <div class="bike-line line-fender"></div>
+                <div class="line-stem"></div>
+                <div class="scooter-bar"></div>
+            </div>
+            <div class="wheel rear">
+                <div class="spoke-cross"></div>
+                <div class="spoke-cross diag"></div>
+            </div>
+            <div class="wheel front">
+                <div class="spoke-cross"></div>
+                <div class="spoke-cross diag"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="results">
+        <div class="result-card">
+            <h3 id="lblFrontWheel">Ön Teker</h3>
+            <div class="value-psi" id="frontPsi">-- PSI</div>
+            <div class="value-bar" id="frontBar">-- BAR</div>
+        </div>
+        <div class="result-card rear">
+            <h3 id="lblRearWheel">Arka Teker</h3>
+            <div class="value-psi" id="rearPsi">-- PSI</div>
+            <div class="value-bar" id="rearBar">-- BAR</div>
+        </div>
+    </div>
+</div>
+
+<script>
+let currentLang = 'tr';
+const languages = {
+    tr: {
+        title: "Mobilite Basınç Hesaplayıcı",
+        vehicleType: "Araç Tipi",
+        mtb: "🚴 Dağ Bisikleti",
+        road: "🚴‍♂️ Yol / Yarış",
+        city: "🚲 Şehir / Hibrit",
+        scooter: "🛴 El. Scooter",
+        weight: "Sürücü Kilosu",
+        terrain: "Sürüş Yapılacak Zemin",
+        frontWheel: "Ön Teker",
+        rearWheel: "Arka Teker",
+        tireWidth: "Lastik Kalınlığı",
+        tireStructure: "Lastik Yapısı",
+        scooterDiameter: "Scooter Tekerlek Çapı",
+        tubed: "İç Lastikli",
+        tubeless: "Tubeless (Dubleks)",
+        asphalt: "Asfalt / Düz Zemin",
+        mixed: "Karışık / Patika / Parke Taş",
+        mud: "Arazi / Çamur / Engebeli",
+        inch85: "8.5 İnç (M365 Pro vb.)",
+        inch10: "10 İnç (G30 Max vb.)",
+        inch11: "11 İnç (Büyük / Güçlü Modeller)",
+        btnText: "Dil: EN"
+    },
+    en: {
+        title: "Mobility Pressure Calculator",
+        vehicleType: "Vehicle Type",
+        mtb: "🚴 Mountain Bike",
+        road: "🚴‍♂️ Road / Racing",
+        city: "🚲 City / Hybrid",
+        scooter: "🛴 E-Scooter",
+        weight: "Rider Weight",
+        terrain: "Riding Terrain",
+        frontWheel: "Front Tyre",
+        rearWheel: "Rear Tyre",
+        tireWidth: "Tyre Width",
+        tireStructure: "Tyre Structure",
+        scooterDiameter: "Scooter Wheel Diameter",
+        tubed: "Clincher (Tubed)",
+        tubeless: "Tubeless",
+        asphalt: "Asphalt / Smooth Flat",
+        mixed: "Mixed / Cobblestone / Path",
+        mud: "Offroad / Mud / Rough",
+        inch85: "8.5 Inch (M365 Pro etc.)",
+        inch10: "10 Inch (G30 Max etc.)",
+        inch11: "11 Inch (Large / Performance)",
+        btnText: "Language: TR"
+    }
+};
+
+function toggleLanguage() {
+    currentLang = currentLang === 'tr' ? 'en' : 'tr';
+    updateStaticTexts();
+    toggleVehicleMode(); 
+}
+
+function updateStaticTexts() {
+    const lang = languages[currentLang];
+    document.getElementById('lblTitle').innerText = lang.title;
+    document.getElementById('lblVehicleType').innerText = lang.vehicleType;
+    document.getElementById('btnMtb').innerText = lang.mtb;
+    document.getElementById('btnRoad').innerText = lang.road;
+    document.getElementById('btnCity').innerText = lang.city;
+    document.getElementById('btnScooter').innerText = lang.scooter;
+    document.getElementById('lblTerrain').innerText = lang.terrain;
+    document.getElementById('lblFrontWheel').innerText = lang.frontWheel;
+    document.getElementById('lblRearWheel').innerText = lang.rearWheel;
+    
+    document.getElementById('langBtnText').innerText = lang.btnText;
+
+    const terrainSelect = document.getElementById('terrain');
+    const currentSelected = terrainSelect.value || 'mixed';
+    terrainSelect.innerHTML = `
+        <option value="asphalt">${lang.asphalt}</option>
+        <option value="mixed">${lang.mixed}</option>
+        <option value="mud">${lang.mud}</option>
+    `;
+    terrainSelect.value = currentSelected;
+}
+
+function toggleVehicleMode() {
+    const vehicle = document.querySelector('input[name="vehicleType"]:checked').value;
+    const animBox = document.getElementById('animBox');
+    const paramGroup = document.getElementById('paramGroup');
+    const lang = languages[currentLang];
+
+    if (vehicle === 'scooter') {
+        animBox.className = 'bike-animation-box mode-scooter';
+        paramGroup.innerHTML = `
+            <label for="wheelSize">${lang.scooterDiameter}</label>
+            <select id="wheelSize" onchange="calculatePressure()">
+                <option value="8.5">${lang.inch85}</option>
+                <option value="10" selected>${lang.inch10}</option>
+                <option value="11">${lang.inch11}</option>
+            </select>
+        `;
+    } else {
+        animBox.className = 'bike-animation-box';
+        
+        let widthOptions = '';
+        if (vehicle === 'mtb') {
+            widthOptions = `
+                <option value="2.0">2.0"</option>
+                <option value="2.1">2.1"</option>
+                <option value="2.2" selected>2.2"</option>
+                <option value="2.4">2.4"</option>
+            `;
+        } else if (vehicle === 'road') {
+            widthOptions = `
+                <option value="23">23 mm</option>
+                <option value="25" selected>25 mm</option>
+                <option value="28">28 mm</option>
+                <option value="32">32 mm</option>
+            `;
+        } else if (vehicle === 'city') {
+            widthOptions = `
+                <option value="35">35 mm / 1.4"</option>
+                <option value="38" selected>38 mm / 1.5"</option>
+                <option value="42">42 mm / 1.65"</option>
+            `;
+        }
+
+        paramGroup.innerHTML = `
+            <div style="margin-bottom: 15px;">
+                <label for="width">${lang.tireWidth}</label>
+                <select id="width" onchange="calculatePressure()">
+                    ${widthOptions}
+                </select>
+            </div>
+            <div>
+                <label>${lang.tireStructure}</label>
+                <div class="radio-group tire-type-group">
+                    <label style="flex: 1;">
+                        <input type="radio" name="tireType" value="tubed" checked onchange="calculatePressure()">
+                        <span class="radio-label">${lang.tubed}</span>
+                    </label>
+                    <label style="flex: 1;">
+                        <input type="radio" name="tireType" value="tubeless" onchange="calculatePressure()">
+                        <span class="radio-label">${lang.tubeless}</span>
+                    </label>
+                </div>
+            </div>
+        `;
+    }
+    calculatePressure();
+}
+
+function calculatePressure() {
+    const vehicle = document.querySelector('input[name="vehicleType"]:checked').value;
+    const weight = parseFloat(document.getElementById('weight').value);
+    const terrain = document.getElementById('terrain').value;
+    const lang = languages[currentLang];
+    
+    document.getElementById('lblWeight').innerHTML = `${lang.weight} <span class="weight-display" id="weightVal">${weight} kg</span>`;
+
+    let frontPsi, rearPsi;
+
+    if (vehicle !== 'scooter') {
+        const width = parseFloat(document.getElementById('width').value);
+        const checkedTire = document.querySelector('input[name="tireType"]:checked');
+        const tireType = checkedTire ? checkedTire.value : 'tubed';
+
+        if (vehicle === 'mtb') {
+            let basePsi = 30;
+            basePsi += (weight - 75) * 0.22; 
+            basePsi += (2.2 - width) * 12;
+            if (tireType === 'tubeless') basePsi -= 3;
+            if (terrain === 'asphalt') basePsi += 4;
+            else if (terrain === 'mud') basePsi -= 3;
+
+            frontPsi = Math.round(basePsi - 1.5);
+            rearPsi = Math.round(basePsi + 1.5);
+            frontPsi = Math.max(15, Math.min(frontPsi, 55));
+            rearPsi = Math.max(17, Math.min(rearPsi, 58));
+
+        } else if (vehicle === 'road') {
+            let basePsi = 90;
+            basePsi += (weight - 75) * 0.6;
+            basePsi += (25 - width) * 1.5;
+            if (tireType === 'tubeless') basePsi -= 7;
+            if (terrain === 'mixed') basePsi -= 5;
+            else if (terrain === 'mud') basePsi -= 10;
+
+            frontPsi = Math.round(basePsi - 4);
+            rearPsi = Math.round(basePsi + 4);
+            frontPsi = Math.max(60, Math.min(frontPsi, 115));
+            rearPsi = Math.max(65, Math.min(rearPsi, 120));
+
+        } else if (vehicle === 'city') {
+            let basePsi = 55;
+            basePsi += (weight - 75) * 0.4;
+            basePsi += (38 - width) * 0.5;
+            if (tireType === 'tubeless') basePsi -= 4;
+            if (terrain === 'asphalt') basePsi += 3;
+            else if (terrain === 'mud') basePsi -= 5;
+
+            frontPsi = Math.round(basePsi - 2);
+            rearPsi = Math.round(basePsi + 3);
+            frontPsi = Math.max(35, Math.min(frontPsi, 75));
+            rearPsi = Math.max(38, Math.min(rearPsi, 80));
+        }
+
+    } else {
+        const wheelSize = parseFloat(document.getElementById('wheelSize').value);
+        
+        let basePsi = 45; 
+        basePsi += (weight - 75) * 0.35; 
+
+        if (wheelSize === 8.5) basePsi += 5;  
+        if (wheelSize === 11) basePsi -= 4;   
+
+        if (terrain === 'asphalt') basePsi += 2;
+        else if (terrain === 'mud') basePsi -= 4; 
+
+        frontPsi = Math.round(basePsi - 2);
+        rearPsi = Math.round(basePsi + 3);
+
+        frontPsi = Math.max(30, Math.min(frontPsi, 60));
+        rearPsi = Math.max(32, Math.min(rearPsi, 65));
+    }
+
+    const frontBar = (frontPsi * 0.0689476).toFixed(1);
+    const rearBar = (rearPsi * 0.0689476).toFixed(1);
+
+    document.getElementById('frontPsi').innerText = frontPsi + " PSI";
+    document.getElementById('frontBar').innerText = frontBar + " BAR";
+    document.getElementById('rearPsi').innerText = rearPsi + " PSI";
+    document.getElementById('rearBar').innerText = rearBar + " BAR";
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+    updateStaticTexts();
+    toggleVehicleMode();
+
+    // CRITICAL: SERVICE WORKER TETİKLEYİCİSİ (OFFLINE DESTEĞİ İÇİN)
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('./service-worker.js')
+        .then(() => console.log("Neon Sistem Offline Çalışmaya Hazır!"))
+        .catch((err) => console.log("Offline Hatası: ", err));
+    }
+});
+</script>
+
+</body>
+</html>

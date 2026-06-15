@@ -1,0 +1,16 @@
+{
+  "name": "Neon Mobilite Basınç Hesaplayıcı",
+  "short_name": "Neon Basınç",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#0d0e15",
+  "theme_color": "#00ff66",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/3159/3159136.png",
+      "sizes": "512 x 512",
+      "type": "image/png"
+    }
+  ]
+}
